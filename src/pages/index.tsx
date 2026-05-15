@@ -6,9 +6,12 @@ import { useAppContext } from "../context/useAppContext";
 const HomePage = () => {
   const {
     chineseData,
+    decreaseTextSize,
+    increaseTextSize,
     loadChineseData,
     resetChineseData,
     showAnnotations,
+    textSize,
     toggleAnnotations,
   } = useAppContext();
 
@@ -38,12 +41,18 @@ const HomePage = () => {
             <UploadForm onDataLoaded={loadChineseData} />
           </div>
         ) : (
-          <TextDisplay data={chineseData} showAnnotations={showAnnotations} />
+          <TextDisplay
+            data={chineseData}
+            showAnnotations={showAnnotations}
+            textSize={textSize}
+          />
         )}
       </main>
 
       <BottomNavigationComponent
-        canToggleAnnotations={chineseData.length > 0}
+        decreaseTextSize={decreaseTextSize}
+        increaseTextSize={increaseTextSize}
+        isHavingAnyData={chineseData.length > 0}
         onUpload={resetChineseData}
         showAnnotations={showAnnotations}
         toggleAnnotations={toggleAnnotations}

@@ -4,6 +4,7 @@ import type { ChineseCharacter } from "../types";
 interface TextDisplayProps {
   data: ChineseCharacter[];
   showAnnotations: boolean;
+  textSize: number;
 }
 
 interface CharacterTooltip {
@@ -14,11 +15,23 @@ interface CharacterTooltip {
   y: number;
 }
 
-const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
+const TextDisplay: React.FC<TextDisplayProps> = ({
+  data,
+  showAnnotations,
+  textSize,
+}) => {
   const [tooltip, setTooltip] = useState<CharacterTooltip | null>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
   const fullText = data.map((item) => item.h).join("");
+  const pinyinTextSize = Math.max(12, textSize * 0.5);
+  const pinyinLineHeight = pinyinTextSize * 1.35;
+  const pinyinBottomGap = Math.max(4, textSize * 0.12);
+  const characterBlockWidth = textSize * 1.5;
+  const characterBottomGap = Math.max(8, textSize * 0.35);
+  const tooltipPinyinSize = Math.max(14, textSize * 0.58);
+  const tooltipCharacterSize = Math.max(20, textSize * 0.9);
+  const tooltipTranslationSize = Math.max(14, textSize * 0.58);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -61,18 +74,20 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
         key={index}
         className="relative inline-block"
         style={{
-          minWidth: "1.5em",
-          marginRight: "0.1em",
-          marginBottom: "0.5em",
+          minWidth: `${characterBlockWidth}px`,
+          marginRight: `${Math.max(2, textSize * 0.08)}px`,
+          marginBottom: `${characterBottomGap}px`,
+          verticalAlign: "top",
         }}
       >
         <div
           className="text-xs text-blue-600 text-center"
           style={{
-            marginTop: "0.8em",
+            marginBottom: `${pinyinBottomGap}px`,
             whiteSpace: "nowrap",
-            fontSize: "0.75em",
-            height: "1em",
+            fontSize: `${pinyinTextSize}px`,
+            height: `${pinyinLineHeight}px`,
+            lineHeight: `${pinyinLineHeight}px`,
             opacity: showAnnotations && pinyin ? 1 : 0,
             visibility: showAnnotations && pinyin ? "visible" : "hidden",
             userSelect: "none",
@@ -84,8 +99,10 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
           {pinyin || ""}
         </div>
         <span
-          className="cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors text-2xl inline-block text-center"
+          className="cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors inline-block text-center"
           style={{
+            fontSize: `${textSize}px`,
+            lineHeight: 1.15,
             width: "100%",
             userSelect: "none",
             WebkitUserSelect: "none",
@@ -117,7 +134,7 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
     <div className="p-8">
       <div
         ref={textRef}
-        className="text-center font-serif text-gray-800 p-8 bg-white rounded-lg shadow-lg text-4xl leading-relaxed pt-20"
+        className="text-center font-serif text-gray-800 p-8 bg-white rounded-lg shadow-lg leading-relaxed pt-20"
       >
         {fullText.split("").map((char, index) => renderCharacter(char, index))}
       </div>
@@ -132,13 +149,21 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
             borderRadius: "12px",
           }}
         >
-          <div className="text-sm text-blue-600 font-medium mb-2">
+          <div
+            className="text-blue-600 font-medium mb-2"
+            style={{ fontSize: `${tooltipPinyinSize}px` }}
+          >
             {tooltip.pinyin}
           </div>
-          <div className="font-bold text-xl mb-2 text-gray-900">
-            {tooltip.character}
+          <div className="font-bold mb-2 text-gray-900">
+            <span style={{ fontSize: `${tooltipCharacterSize}px` }}>
+              {tooltip.character}
+            </span>
           </div>
-          <div className="text-sm text-gray-700 border-t pt-2">
+          <div
+            className="text-gray-700 border-t pt-2"
+            style={{ fontSize: `${tooltipTranslationSize}px` }}
+          >
             {tooltip.translation}
           </div>
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">

@@ -1,17 +1,23 @@
 import UploadIcon from "@mui/icons-material/FileUpload";
 import AnnotationIcon from "@mui/icons-material/ViewList";
+import TextDecreaseIcon from "@mui/icons-material/TextDecrease";
+import TextIncreaseIcon from "@mui/icons-material/TextIncrease";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import React from "react";
 
 interface BottomNavigationProps {
-  canToggleAnnotations: boolean;
+  decreaseTextSize: () => void;
+  increaseTextSize: () => void;
+  isHavingAnyData: boolean;
   onUpload: () => void;
   showAnnotations: boolean;
   toggleAnnotations: () => void;
 }
 
 const BottomNavigationComponent: React.FC<BottomNavigationProps> = ({
-  canToggleAnnotations,
+  decreaseTextSize,
+  increaseTextSize,
+  isHavingAnyData,
   onUpload,
   showAnnotations,
   toggleAnnotations,
@@ -34,10 +40,22 @@ const BottomNavigationComponent: React.FC<BottomNavigationProps> = ({
         onClick={onUpload}
       />
       <BottomNavigationAction
-        disabled={!canToggleAnnotations}
+        disabled={!isHavingAnyData}
         label={showAnnotations ? "Hide Pinyin" : "Show Pinyin"}
         icon={<AnnotationIcon />}
         onClick={toggleAnnotations}
+      />
+      <BottomNavigationAction
+        disabled={!isHavingAnyData}
+        label="Bigger"
+        icon={<TextIncreaseIcon />}
+        onClick={increaseTextSize}
+      />
+      <BottomNavigationAction
+        disabled={!isHavingAnyData}
+        label="Smaller"
+        icon={<TextDecreaseIcon />}
+        onClick={decreaseTextSize}
       />
     </BottomNavigation>
   );
