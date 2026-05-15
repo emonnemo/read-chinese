@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { ChineseCharacter } from "../types";
 
-interface ChineseTextDisplayProps {
+interface TextDisplayProps {
   data: ChineseCharacter[];
   showAnnotations: boolean;
 }
@@ -14,10 +14,7 @@ interface CharacterTooltip {
   y: number;
 }
 
-const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
-  data,
-  showAnnotations,
-}) => {
+const TextDisplay: React.FC<TextDisplayProps> = ({ data, showAnnotations }) => {
   const [tooltip, setTooltip] = useState<CharacterTooltip | null>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +35,6 @@ const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
     for (const item of data) {
       const charIndex = item.h.indexOf(char);
       if (charIndex !== -1) {
-        // For multi-character words, we need to split the pinyin
         const pinyinParts = item.p.split(" ");
         if (pinyinParts[charIndex]) {
           return pinyinParts[charIndex];
@@ -53,7 +49,6 @@ const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
   };
 
   const renderCharacter = (char: string, index: number) => {
-    // Handle newline characters
     if (char === "\n") {
       return <br key={index} />;
     }
@@ -109,7 +104,6 @@ const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
               });
             }
           }}
-          onMouseUp={() => {}}
           onMouseLeave={() => setTooltip(null)}
           onClick={() => setTooltip(null)}
         >
@@ -148,9 +142,9 @@ const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
             {tooltip.translation}
           </div>
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-            <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white"></div>
+            <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white" />
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-px">
-              <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-300"></div>
+              <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-300" />
             </div>
           </div>
         </div>
@@ -159,4 +153,4 @@ const ChineseTextDisplay: React.FC<ChineseTextDisplayProps> = ({
   );
 };
 
-export default ChineseTextDisplay;
+export default TextDisplay;

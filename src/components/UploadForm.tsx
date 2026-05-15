@@ -1,11 +1,12 @@
 import React from "react";
+import { parseChineseTextJson } from "../services/api";
 import type { ChineseCharacter } from "../types";
 
-interface FileUploadProps {
+interface UploadFormProps {
   onDataLoaded: (data: ChineseCharacter[]) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
+const UploadForm: React.FC<UploadFormProps> = ({ onDataLoaded }) => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -14,8 +15,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const data = JSON.parse(content) as ChineseCharacter[];
-        onDataLoaded(data);
+        onDataLoaded(parseChineseTextJson(content));
       } catch (error) {
         console.error("Error parsing JSON:", error);
         alert(
@@ -62,4 +62,4 @@ const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
   );
 };
 
-export default FileUpload;
+export default UploadForm;
