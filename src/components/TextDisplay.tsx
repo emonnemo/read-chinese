@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import CharacterTooltip from "./CharacterTooltip";
 import type { ChineseCharacter } from "../types";
 
 interface TextDisplayProps {
@@ -29,9 +30,6 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
   const pinyinBottomGap = Math.max(4, textSize * 0.12);
   const characterBlockWidth = textSize * 1.5;
   const characterBottomGap = Math.max(8, textSize * 0.35);
-  const tooltipPinyinSize = Math.max(14, textSize * 0.58);
-  const tooltipCharacterSize = Math.max(20, textSize * 0.9);
-  const tooltipTranslationSize = Math.max(14, textSize * 0.58);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -140,39 +138,14 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
       </div>
 
       {tooltip && (
-        <div
-          className="fixed z-50 border-2 border-gray-300 text-gray-800 p-4 rounded-xl shadow-2xl max-w-xs transform -translate-x-1/2 -translate-y-full"
-          style={{
-            left: `${tooltip.x}px`,
-            top: `${tooltip.y}px`,
-            backgroundColor: "white",
-            borderRadius: "12px",
-          }}
-        >
-          <div
-            className="text-blue-600 font-medium mb-2"
-            style={{ fontSize: `${tooltipPinyinSize}px` }}
-          >
-            {tooltip.pinyin}
-          </div>
-          <div className="font-bold mb-2 text-gray-900">
-            <span style={{ fontSize: `${tooltipCharacterSize}px` }}>
-              {tooltip.character}
-            </span>
-          </div>
-          <div
-            className="text-gray-700 border-t pt-2"
-            style={{ fontSize: `${tooltipTranslationSize}px` }}
-          >
-            {tooltip.translation}
-          </div>
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-            <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white" />
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-px">
-              <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-300" />
-            </div>
-          </div>
-        </div>
+        <CharacterTooltip
+          character={tooltip.character}
+          pinyin={tooltip.pinyin}
+          textSize={textSize}
+          translation={tooltip.translation}
+          x={tooltip.x}
+          y={tooltip.y}
+        />
       )}
     </div>
   );
