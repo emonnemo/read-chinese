@@ -24,12 +24,13 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
   const [tooltip, setTooltip] = useState<CharacterTooltip | null>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  const fullText = data.map((item) => item.h).join("");
   const pinyinTextSize = Math.max(12, textSize * 0.5);
   const pinyinLineHeight = pinyinTextSize * 1.35;
   const pinyinBottomGap = Math.max(4, textSize * 0.12);
-  const characterBlockWidth = textSize * 1.5;
+  const characterBlockWidth = textSize * 1.2;
   const characterBottomGap = Math.max(8, textSize * 0.35);
+  const groupedCharacterGap = Math.max(1, textSize * 0.03);
+  const wordGroupGap = Math.max(8, textSize * 0.35);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -42,38 +43,24 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
     };
   }, []);
 
-  const getCharacterPinyin = (char: string): string | undefined => {
-    for (const item of data) {
-      const charIndex = item.h.indexOf(char);
-      if (charIndex !== -1) {
-        const pinyinParts = item.p.split(" ");
-        if (pinyinParts[charIndex]) {
-          return pinyinParts[charIndex];
-        }
-      }
-    }
-    return undefined;
-  };
-
-  const getCharacterInfo = (char: string): ChineseCharacter | undefined => {
-    return data.find((item) => item.h.includes(char));
-  };
-
-  const renderCharacter = (char: string, index: number) => {
+  const renderCharacter = (
+    char: string,
+    characterIndex: number,
+    item: ChineseCharacter,
+  ) => {
     if (char === "\n") {
-      return <br key={index} />;
+      return <br key={characterIndex} />;
     }
 
-    const pinyin = getCharacterPinyin(char);
-    const charInfo = getCharacterInfo(char);
+    const pinyin = item.p.split(" ")[characterIndex];
 
     return (
       <span
-        key={index}
+        key={`${item.h}-${characterIndex}`}
         className="relative inline-block"
         style={{
           minWidth: `${characterBlockWidth}px`,
-          marginRight: `${Math.max(2, textSize * 0.08)}px`,
+          marginRight: `${groupedCharacterGap}px`,
           marginBottom: `${characterBottomGap}px`,
           verticalAlign: "top",
         }}
@@ -109,15 +96,13 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
           }}
           onMouseDown={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
-            if (charInfo) {
-              setTooltip({
-                character: charInfo.h,
-                pinyin: charInfo.p,
-                translation: charInfo.t,
-                x: rect.left + rect.width / 2,
-                y: rect.top - 10,
-              });
-            }
+            setTooltip({
+              character: item.h,
+              pinyin: item.p,
+              translation: item.t,
+              x: rect.left + rect.width / 2,
+              y: rect.top - 10,
+            });
           }}
           onMouseLeave={() => setTooltip(null)}
           onClick={() => setTooltip(null)}
@@ -128,13 +113,36 @@ const TextDisplay: React.FC<TextDisplayProps> = ({
     );
   };
 
+  const renderWordGroup = (item: ChineseCharacter, itemIndex: number) => {
+    if (item.h === "\n") {
+      return <br key={`line-break-${itemIndex}`} />;
+    }
+
+    return (
+      <span
+        key={`${item.h}-${itemIndex}`}
+        className="inline-block"
+        style={{
+          marginRight: `${wordGroupGap}px`,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {item.h
+          .split("")
+          .map((char, characterIndex) =>
+            renderCharacter(char, characterIndex, item),
+          )}
+      </span>
+    );
+  };
+
   return (
     <div className="p-8">
       <div
         ref={textRef}
         className="text-center font-serif text-gray-800 p-8 bg-white rounded-lg shadow-lg leading-relaxed pt-20"
       >
-        {fullText.split("").map((char, index) => renderCharacter(char, index))}
+        {data.map((item, itemIndex) => renderWordGroup(item, itemIndex))}
       </div>
 
       {tooltip && (
